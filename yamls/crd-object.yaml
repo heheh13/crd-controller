@@ -1,0 +1,9 @@
+apiVersion: "heheh.example.com/v1"
+kind: Custompod
+metadata:
+  name: alpines
+spec:
+  container:
+    imagePullPolicy: always
+    image: alpine
+    name: alpine
