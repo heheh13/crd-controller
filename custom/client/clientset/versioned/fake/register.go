@@ -18,7 +18,7 @@ limitations under the License.
 package fake
 
 import (
-	destroymentsv1 "github.com/heheh13/crd/custom/apis/destroyments.heheh.com/v1"
+	hehehv1 "github.com/heheh13/crd/custom/apis/heheh.com/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -30,7 +30,7 @@ var scheme = runtime.NewScheme()
 var codecs = serializer.NewCodecFactory(scheme)
 
 var localSchemeBuilder = runtime.SchemeBuilder{
-	destroymentsv1.AddToScheme,
+	hehehv1.AddToScheme,
 }
 
 // AddToScheme adds all types of this clientset into the given scheme. This allows composition

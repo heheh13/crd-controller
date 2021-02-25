@@ -20,7 +20,7 @@ package versioned
 import (
 	"fmt"
 
-	destroymentsv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/destroyments.heheh.com/v1"
+	hehehv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/heheh.com/v1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
@@ -28,19 +28,19 @@ import (
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
-	DestroymentsV1() destroymentsv1.DestroymentsV1Interface
+	HehehV1() hehehv1.HehehV1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	destroymentsV1 *destroymentsv1.DestroymentsV1Client
+	hehehV1 *hehehv1.HehehV1Client
 }
 
-// DestroymentsV1 retrieves the DestroymentsV1Client
-func (c *Clientset) DestroymentsV1() destroymentsv1.DestroymentsV1Interface {
-	return c.destroymentsV1
+// HehehV1 retrieves the HehehV1Client
+func (c *Clientset) HehehV1() hehehv1.HehehV1Interface {
+	return c.hehehV1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -64,7 +64,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	}
 	var cs Clientset
 	var err error
-	cs.destroymentsV1, err = destroymentsv1.NewForConfig(&configShallowCopy)
+	cs.hehehV1, err = hehehv1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
-	cs.destroymentsV1 = destroymentsv1.NewForConfigOrDie(c)
+	cs.hehehV1 = hehehv1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -89,7 +89,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.destroymentsV1 = destroymentsv1.New(c)
+	cs.hehehV1 = hehehv1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

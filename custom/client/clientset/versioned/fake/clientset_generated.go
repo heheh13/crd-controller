@@ -19,8 +19,8 @@ package fake
 
 import (
 	clientset "github.com/heheh13/crd/custom/client/clientset/versioned"
-	destroymentsv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/destroyments.heheh.com/v1"
-	fakedestroymentsv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/destroyments.heheh.com/v1/fake"
+	hehehv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/heheh.com/v1"
+	fakehehehv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/heheh.com/v1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
@@ -75,7 +75,7 @@ func (c *Clientset) Tracker() testing.ObjectTracker {
 
 var _ clientset.Interface = &Clientset{}
 
-// DestroymentsV1 retrieves the DestroymentsV1Client
-func (c *Clientset) DestroymentsV1() destroymentsv1.DestroymentsV1Interface {
-	return &fakedestroymentsv1.FakeDestroymentsV1{Fake: &c.Fake}
+// HehehV1 retrieves the HehehV1Client
+func (c *Clientset) HehehV1() hehehv1.HehehV1Interface {
+	return &fakehehehv1.FakeHehehV1{Fake: &c.Fake}
 }

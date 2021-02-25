@@ -23,7 +23,7 @@ import (
 	time "time"
 
 	versioned "github.com/heheh13/crd/custom/client/clientset/versioned"
-	destroymentshehehcom "github.com/heheh13/crd/custom/client/informers/externalversions/destroyments.heheh.com"
+	hehehcom "github.com/heheh13/crd/custom/client/informers/externalversions/heheh.com"
 	internalinterfaces "github.com/heheh13/crd/custom/client/informers/externalversions/internalinterfaces"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
@@ -171,9 +171,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Destroyments() destroymentshehehcom.Interface
+	Heheh() hehehcom.Interface
 }
 
-func (f *sharedInformerFactory) Destroyments() destroymentshehehcom.Interface {
-	return destroymentshehehcom.New(f, f.namespace, f.tweakListOptions)
+func (f *sharedInformerFactory) Heheh() hehehcom.Interface {
+	return hehehcom.New(f, f.namespace, f.tweakListOptions)
 }

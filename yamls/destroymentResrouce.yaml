@@ -1,0 +1,14 @@
+apiVersion: heheh.com/v1
+kind: Destroyment
+metadata:
+  name: destroyments-test
+spec:
+  replicas: 2
+  container: 
+    image: nginx
+    port: 8080
+
+
+
+
+    

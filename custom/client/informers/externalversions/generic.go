@@ -20,7 +20,7 @@ package externalversions
 import (
 	"fmt"
 
-	v1 "github.com/heheh13/crd/custom/apis/destroyments.heheh.com/v1"
+	v1 "github.com/heheh13/crd/custom/apis/heheh.com/v1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 )
@@ -51,9 +51,9 @@ func (f *genericInformer) Lister() cache.GenericLister {
 // TODO extend this to unknown resources with a client pool
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
-	// Group=destroyments.heheh.com, Version=v1
+	// Group=heheh.com, Version=v1
 	case v1.SchemeGroupVersion.WithResource("destroyments"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Destroyments().V1().Destroyments().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Heheh().V1().Destroyments().Informer()}, nil
 
 	}
 
