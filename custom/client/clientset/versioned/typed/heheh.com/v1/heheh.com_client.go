@@ -18,8 +18,8 @@ limitations under the License.
 package v1
 
 import (
-	v1 "github.com/heheh13/crd/custom/apis/heheh.com/v1"
-	"github.com/heheh13/crd/custom/client/clientset/versioned/scheme"
+	v1 "github.com/heheh13/crd-controller/custom/apis/heheh.com/v1"
+	"github.com/heheh13/crd-controller/custom/client/clientset/versioned/scheme"
 	rest "k8s.io/client-go/rest"
 )
 

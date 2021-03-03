@@ -18,7 +18,7 @@ limitations under the License.
 package fake
 
 import (
-	v1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/heheh.com/v1"
+	v1 "github.com/heheh13/crd-controller/custom/client/clientset/versioned/typed/heheh.com/v1"
 	rest "k8s.io/client-go/rest"
 	testing "k8s.io/client-go/testing"
 )

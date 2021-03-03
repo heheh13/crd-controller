@@ -18,8 +18,8 @@ limitations under the License.
 package heheh
 
 import (
-	v1 "github.com/heheh13/crd/custom/client/informers/externalversions/heheh.com/v1"
-	internalinterfaces "github.com/heheh13/crd/custom/client/informers/externalversions/internalinterfaces"
+	v1 "github.com/heheh13/crd-controller/custom/client/informers/externalversions/heheh.com/v1"
+	internalinterfaces "github.com/heheh13/crd-controller/custom/client/informers/externalversions/internalinterfaces"
 )
 
 // Interface provides access to each of this group's versions.

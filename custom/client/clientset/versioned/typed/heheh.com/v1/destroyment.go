@@ -21,8 +21,8 @@ import (
 	"context"
 	"time"
 
-	v1 "github.com/heheh13/crd/custom/apis/heheh.com/v1"
-	scheme "github.com/heheh13/crd/custom/client/clientset/versioned/scheme"
+	v1 "github.com/heheh13/crd-controller/custom/apis/heheh.com/v1"
+	scheme "github.com/heheh13/crd-controller/custom/client/clientset/versioned/scheme"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"

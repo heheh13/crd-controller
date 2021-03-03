@@ -20,7 +20,7 @@ package fake
 import (
 	"context"
 
-	hehehcomv1 "github.com/heheh13/crd/custom/apis/heheh.com/v1"
+	hehehcomv1 "github.com/heheh13/crd-controller/custom/apis/heheh.com/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

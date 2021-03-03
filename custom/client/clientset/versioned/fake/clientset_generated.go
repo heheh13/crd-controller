@@ -18,9 +18,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/heheh13/crd/custom/client/clientset/versioned"
-	hehehv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/heheh.com/v1"
-	fakehehehv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/heheh.com/v1/fake"
+	clientset "github.com/heheh13/crd-controller/custom/client/clientset/versioned"
+	hehehv1 "github.com/heheh13/crd-controller/custom/client/clientset/versioned/typed/heheh.com/v1"
+	fakehehehv1 "github.com/heheh13/crd-controller/custom/client/clientset/versioned/typed/heheh.com/v1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"

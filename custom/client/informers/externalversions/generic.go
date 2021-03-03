@@ -20,7 +20,7 @@ package externalversions
 import (
 	"fmt"
 
-	v1 "github.com/heheh13/crd/custom/apis/heheh.com/v1"
+	v1 "github.com/heheh13/crd-controller/custom/apis/heheh.com/v1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 )

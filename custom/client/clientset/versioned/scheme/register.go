@@ -18,7 +18,7 @@ limitations under the License.
 package scheme
 
 import (
-	hehehv1 "github.com/heheh13/crd/custom/apis/heheh.com/v1"
+	hehehv1 "github.com/heheh13/crd-controller/custom/apis/heheh.com/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

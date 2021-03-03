@@ -20,7 +20,7 @@ package versioned
 import (
 	"fmt"
 
-	hehehv1 "github.com/heheh13/crd/custom/client/clientset/versioned/typed/heheh.com/v1"
+	hehehv1 "github.com/heheh13/crd-controller/custom/client/clientset/versioned/typed/heheh.com/v1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
