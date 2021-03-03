@@ -65,7 +65,9 @@ func NewController(
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			controller.enqueueFoo(newObj)
 		},
-		DeleteFunc: func(obj interface{}) {},
+		DeleteFunc: func(obj interface{}) {
+			controller.enqueueFoo(obj)
+		},
 	})
 
 	return controller
@@ -96,6 +98,7 @@ func (c *Controller) Run(stopCh <-chan struct{}) error {
 		fmt.Println("err===========" + err.Error())
 	}
 	spew.Dump(des)
+
 	fmt.Println("..................................................................")
 	if !cache.WaitForCacheSync(stopCh, c.destroymentSyncd) {
 		return fmt.Errorf("failed to sync")
@@ -206,7 +209,13 @@ func (c *Controller) syncHandler(key string) interface{} {
 
 func (c *Controller) updateFooStatus(destroyment *v1.Destroyment, deployment *appsv1.Deployment) error {
 	fmt.Println("update yet to implement")
-	return nil
+	destroymentcopy := destroyment.DeepCopy()
+	destroymentcopy.Status.Phase = "running??"
+	//destroymentcopy.Status.AvailableReplicas = deployment.Status.AvailableReplicas
+	//_, err := c.sampleclientset.CrdcntrlrV1alpha1().Foos(foo.Namespace).Update(fooCopy)
+	_, err := c.sampleclientset.HehehV1().Destroyments(destroymentcopy.Namespace).Update(context.TODO(), destroymentcopy, metav1.UpdateOptions{})
+	return err
+
 }
 
 func newDeployment(destroyment v1.Destroyment) *appsv1.Deployment {
@@ -218,6 +227,9 @@ func newDeployment(destroyment v1.Destroyment) *appsv1.Deployment {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      destroyment.Name,
 			Namespace: destroyment.Namespace,
+			OwnerReferences: []metav1.OwnerReference{
+				*metav1.NewControllerRef(&destroyment, v1.SchemeGroupVersion.WithKind("Destroyment")),
+			},
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: destroyment.Spec.Replicas,

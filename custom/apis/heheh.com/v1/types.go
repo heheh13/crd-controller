@@ -2,7 +2,7 @@ package v1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	// _ "k8s.io/code-generator"
+	///_ "k8s.io/code-generator"
 )
 
 // +genclient
@@ -23,6 +23,8 @@ type DestroymentList struct {
 	metav1.ListMeta `json:"metadata,omitempty"`
 	// Items is the list of Deployments.
 	Items []Destroyment `json:"items,omitempty"`
+
+	//Destroymentss []Destroyment `json:"destroymentss,omitempty"`
 }
 
 type DestroymentSpec struct {
