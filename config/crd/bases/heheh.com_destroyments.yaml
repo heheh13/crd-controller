@@ -1,0 +1,91 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: (devel)
+  creationTimestamp: null
+  name: destroyments.heheh.com
+spec:
+  group: heheh.com
+  names:
+    kind: Destroyment
+    listKind: DestroymentList
+    plural: destroyments
+    shortNames:
+    - ds
+    singular: destroyment
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    - jsonPath: .status.replicas
+      name: Replicas
+      type: integer
+    - jsonPath: .status.phase
+      name: Status
+      type: string
+    name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              container:
+                properties:
+                  image:
+                    maxLength: 50
+                    minLength: 1
+                    type: string
+                  port:
+                    format: int32
+                    type: integer
+                type: object
+              replicas:
+                description: may  be need to define as a pointer * Replicas int32
+                format: int32
+                maximum: 10
+                minimum: 1
+                type: integer
+              serviceSpec:
+                properties:
+                  serviceType:
+                    default: ClusterIP
+                    type: string
+                type: object
+            type: object
+          status:
+            properties:
+              availableReplicas:
+                format: int32
+                type: integer
+              phase:
+                maxLength: 15
+                minLength: 1
+                type: string
+              replicas:
+                format: int32
+                type: integer
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

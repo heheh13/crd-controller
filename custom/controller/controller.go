@@ -6,8 +6,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
-
 	v1 "github.com/heheh13/crd-controller/custom/apis/heheh.com/v1"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -31,19 +29,25 @@ import (
 	"k8s.io/client-go/util/workqueue"
 )
 
+//Controller is the controller implementation for Custom destroyment Resource.
 type Controller struct {
-	kubeclientset   kubernetes.Interface
-	sampleclientset clientset.Interface
-
+	//kubeclientset is the standard kubernetes clientset
+	kubeclientset kubernetes.Interface
+	//sampleclientset is a clientset for our own api group
+	sampleclientset   clientset.Interface
 	deploymentsLister appslisters.DeploymentLister
 
 	destroymentLister lister.DestroymentLister
 	destroymentSyncd  cache.InformerSynced
-
+	//workqueue is a rate limited workqueue
+	// main goal of using a workque to never work with the two or more api object  of same type at the same time
 	workqueue workqueue.RateLimitingInterface
 }
 
+//NewController a constructor.
+// returns a new controller for controlling the custom resource.
 func NewController(
+
 	kubeclientset kubernetes.Interface,
 	sampleclientset clientset.Interface,
 	deploymentInformer appsinformers.DeploymentInformer,
@@ -61,19 +65,22 @@ func NewController(
 	log.Println("Setting up event handlers")
 
 	destroymentInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: controller.enqueueFoo,
+		AddFunc: controller.enqueDestroyment,
 		UpdateFunc: func(oldObj, newObj interface{}) {
-			controller.enqueueFoo(newObj)
+			controller.enqueDestroyment(newObj)
 		},
 		DeleteFunc: func(obj interface{}) {
-			controller.enqueueFoo(obj)
+			controller.enqueDestroyment(obj)
 		},
 	})
+
+	// able to use a deploymentinformer??...
+	// see https://github.com/kubernetes/sample-controller/blob/master/controller.go#L129
 
 	return controller
 
 }
-func (c *Controller) enqueueFoo(obj interface{}) {
+func (c *Controller) enqueDestroyment(obj interface{}) {
 	log.Println("Enqueueing Foo. . . ")
 	var key string
 	var err error
@@ -84,7 +91,9 @@ func (c *Controller) enqueueFoo(obj interface{}) {
 	c.workqueue.AddRateLimited(key)
 }
 
-func (c *Controller) Run(stopCh <-chan struct{}) error {
+// Run will set up the event handlers for the type we are interested
+// will block until stopCh is closed
+func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 
 	defer utilruntime.HandleCrash()
 	defer c.workqueue.ShutDown()
@@ -92,20 +101,23 @@ func (c *Controller) Run(stopCh <-chan struct{}) error {
 	log.Println("starting Controller")
 
 	log.Println("waiting for caches to sync")
-	fmt.Println("......................................................")
-	des, err := c.sampleclientset.HehehV1().Destroyments("default").Get(context.TODO(), "destroyment", metav1.GetOptions{})
-	if err != nil {
-		fmt.Println("err===========" + err.Error())
-	}
-	spew.Dump(des)
-
-	fmt.Println("..................................................................")
+	//fmt.Println("......................................................")
+	//des, err := c.sampleclientset.HehehV1().Destroyments("default").Get(context.TODO(), "destroyment", metav1.GetOptions{})
+	//if err != nil {
+	//	fmt.Println("err===========" + err.Error())
+	//}
+	//spew.Dump(des)
+	//
+	//fmt.Println("..................................................................")
 	if !cache.WaitForCacheSync(stopCh, c.destroymentSyncd) {
 		return fmt.Errorf("failed to sync")
 	}
 	log.Println("starting workers!!")
 
-	go wait.Until(c.runWorker, time.Second, stopCh)
+	//launch <threadiness> worker to process Custom resources
+	for i := 0; i < threadiness; i++ {
+		go wait.Until(c.runWorker, time.Second, stopCh)
+	}
 
 	log.Println("started workers")
 
@@ -154,6 +166,7 @@ func (c *Controller) processNextWorkItem() bool {
 
 }
 
+// will implement the bussness logic here..
 func (c *Controller) syncHandler(key string) interface{} {
 
 	namespace, name, err := cache.SplitMetaNamespaceKey(key)
@@ -183,11 +196,12 @@ func (c *Controller) syncHandler(key string) interface{} {
 		if err != nil {
 			return err
 		}
+		log.Printf("\n\n deployment created %s\n\n", deployment.Name)
 	}
 
 	if destroyment.Spec.Replicas != nil && *destroyment.Spec.Replicas != *deployment.Spec.Replicas {
 		log.Printf("destroyment %s replicas: %d, deployment replicas: %d\n\n", name, *destroyment.Spec.Replicas, *deployment.Spec.Replicas)
-		if *destroyment.Spec.Replicas > *destroyment.Spec.Replicas {
+		if *destroyment.Spec.Replicas > *deployment.Spec.Replicas {
 			log.Println("scalling up deploymnet to ", *destroyment.Spec.Replicas, ".......")
 		} else {
 			log.Println("scaling down deployment to ", *destroyment.Spec.Replicas, "............")
@@ -199,28 +213,54 @@ func (c *Controller) syncHandler(key string) interface{} {
 		}
 	}
 
-	err = c.updateFooStatus(destroyment, deployment)
+	err = c.updateDestroymnetStatus(destroyment, deployment)
 	if err != nil {
 		return err
 	}
 
+	serviceName := destroyment.Name
+	if serviceName == "" {
+		utilruntime.HandleError(fmt.Errorf("must provide service name"))
+		return nil
+	}
+	//if service avail able check for it
+	//else create a new one
+	service, err := c.kubeclientset.CoreV1().Services(destroyment.Namespace).Get(context.TODO(), destroyment.Name, metav1.GetOptions{})
+	if errors.IsNotFound(err) {
+		service, err = c.kubeclientset.CoreV1().Services(destroyment.Namespace).Create(context.TODO(), newService(*destroyment), metav1.CreateOptions{})
+		if err != nil {
+			log.Println("error while creating serviecs...")
+			return err
+		}
+		log.Printf("\n\nservice %s created ....\n\n", service.Name)
+	} else if err != nil {
+		log.Println("error while getting serviecs...")
+		return err
+	}
+
+	_, err = c.kubeclientset.CoreV1().Services(destroyment.Namespace).Update(context.TODO(), service, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+	//fmt.Println(service)
 	return nil
 }
 
-func (c *Controller) updateFooStatus(destroyment *v1.Destroyment, deployment *appsv1.Deployment) error {
-	fmt.Println("update yet to implement")
+func (c *Controller) updateDestroymnetStatus(destroyment *v1.Destroyment, deployment *appsv1.Deployment) error {
+	fmt.Println("updating status!!!!!!!!!!!")
 	destroymentcopy := destroyment.DeepCopy()
-	destroymentcopy.Status.Phase = "running??"
-	//destroymentcopy.Status.AvailableReplicas = deployment.Status.AvailableReplicas
+	destroymentcopy.Status.Phase = "running..."
+	destroymentcopy.Status.AvailableReplicas = deployment.Status.AvailableReplicas
+	destroymentcopy.Status.Replicas = deployment.Status.Replicas
 	//_, err := c.sampleclientset.CrdcntrlrV1alpha1().Foos(foo.Namespace).Update(fooCopy)
-	_, err := c.sampleclientset.HehehV1().Destroyments(destroymentcopy.Namespace).Update(context.TODO(), destroymentcopy, metav1.UpdateOptions{})
+	_, err := c.sampleclientset.HehehV1().Destroyments(destroymentcopy.Namespace).UpdateStatus(context.TODO(), destroymentcopy, metav1.UpdateOptions{})
 	return err
 
 }
 
 func newDeployment(destroyment v1.Destroyment) *appsv1.Deployment {
 	labels := map[string]string{
-		"app":        "nginx",
+		"k8s.io/app": destroyment.Name,
 		"controller": destroyment.Name,
 	}
 	return &appsv1.Deployment{
@@ -248,6 +288,38 @@ func newDeployment(destroyment v1.Destroyment) *appsv1.Deployment {
 						},
 					},
 				},
+			},
+		},
+	}
+}
+
+func newService(destroyment v1.Destroyment) *corev1.Service {
+	return &corev1.Service{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "Service",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: destroyment.Name,
+			Labels: map[string]string{
+				"k8s.io/app":  destroyment.Name,
+				"k8s.io/name": destroyment.Name,
+			},
+			OwnerReferences: []metav1.OwnerReference{
+				*metav1.NewControllerRef(&destroyment, v1.SchemeGroupVersion.WithKind("Destroyment")),
+			},
+		},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{
+					Name:        "",
+					Protocol:    corev1.ProtocolTCP,
+					AppProtocol: nil,
+					Port:        destroyment.Spec.Container.Port,
+				},
+			},
+			Type: corev1.ServiceType(destroyment.Spec.ServiceSpec.ServiceType),
+			Selector: map[string]string{
+				"k8s.io/app": destroyment.Name,
 			},
 		},
 	}

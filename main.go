@@ -40,7 +40,7 @@ func main() {
 	kubeInformerFactory.Start(stopch)
 	customInformerFactory.Start(stopch)
 
-	if err = controller.Run(stopch); err != nil {
+	if err = controller.Run(2, stopch); err != nil {
 		fmt.Println("error running controller ", err.Error())
 	}
 

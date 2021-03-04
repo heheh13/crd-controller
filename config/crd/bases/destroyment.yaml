@@ -1,0 +1,13 @@
+apiVersion: heheh.com/v1
+kind: Destroyment
+metadata:
+  name: destroyments-test
+  labels:
+    k8s.io/app: my-app
+spec:
+  replicas: 2
+  container: 
+    image: nginx
+    port: 80
+  serviceSpec:
+    serviceType: ClusterIP
